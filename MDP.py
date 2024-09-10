@@ -141,27 +141,28 @@ class MDP :
                 
                 if state in self.terminal_states : 
                     value_states[state] = self.generate_reward(state)
+                    best_action[state] = None
                     continue
                 
                 v = value_states[state]
                 best_value = float("-inf")
                 
                 for action in self.actions[state]:
-                    print("current action :", action)
+                    # print("current action :", action)
                     possible_next_states = self.possible_next_states(state,action)
-                    print("possible next states : ", possible_next_states)
+                    # print("possible next states : ", possible_next_states)
                     possible_value = 0 
                     
                     
                     for possible_next_state in possible_next_states:                        
                         possible_reward = self.generate_reward(possible_next_state)
                         transition_prob = self.transition_function(state)
-                        print(" self.transition_function(state) is :",  transition_prob)
-                        print("possible reward is : ", possible_reward)
+                        # print(" self.transition_function(state) is :",  transition_prob)
+                        # print("possible reward is : ", possible_reward)
                        
                         
                         possible_value += transition_prob * (possible_reward + (discount_factor * value_states[possible_next_state]))
-                        print ("possible v_s is : ", possible_value)
+                        # print ("possible v_s is : ", possible_value)
                        
                     
                     best_value  = max(best_value, possible_value)
@@ -176,20 +177,14 @@ class MDP :
     
     
 if __name__ == "__main__":
-    toto = MDP()
-    toto.generate_possible_states()
+    mdp = MDP()
+    mdp.generate_possible_states()
     #print ("all states are : ", toto.states)
-    toto.generate_terminal_states() # generate terminal states first because generate actions needs them
+    mdp.generate_terminal_states() # generate terminal states first because generate actions needs them
     # print("terminal states : ", toto.terminal_states)
-    #toto.generate_actions()
-    if (2, 2, 2, 0, 1, 1, 1, 0, 1) in toto.terminal_states : 
-        print ("yeosndnkklhgfhgpd")
-    titi = toto.check_win((2, 2, 2, 0, 1, 1, 1, 0, 1))
-    print(titi)
-    #print("all actions are : ", toto.actions)
-    #print("going into value iteration method")
-    #tata = toto.value_iteration()
-    #print(tata)
+    mdp.generate_actions()
+    best_actions = mdp.value_iteration()
+    print(best_actions)
                 
                 
             
