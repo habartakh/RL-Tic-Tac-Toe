@@ -5,6 +5,7 @@ class MDP :
         self.states = set()
         self.terminal_states = set()
         self.actions = {}
+        self.policy = {}
         
         
     
@@ -131,17 +132,17 @@ class MDP :
         
         init = [0 for _ in range (len(self.states))] 
         value_states = dict(zip(self.states , init)) # V_a(s) for each state
-        best_action = dict(zip(self.states, init)) # for each state, determines best action to take (policy)
+        self.policy = dict(zip(self.states, init)) # for each state, determines best action to take (policy)
         
         while delta >= theta : 
             delta = 0 
             for state in self.states:
-                print("current state is : ", state)
+                # print("current state is : ", state)
                
                 
                 if state in self.terminal_states : 
                     value_states[state] = self.generate_reward(state)
-                    best_action[state] = None
+                    self.policy[state] = None
                     continue
                 
                 v = value_states[state]
@@ -168,23 +169,25 @@ class MDP :
                     best_value  = max(best_value, possible_value)
                             
                 value_states[state] = best_value # update the value of the current state
-                best_action[state] = action  # store the best action for the state
+                self.policy[state] = action  # store the best action for the state
                 
                 delta = max(delta, abs(v-value_states[state]))  #update delta 
-                print("delta" , delta)
+                # print("delta" , delta)
         
-        return best_action
+    
+    def generate_policy (self):
+        self.generate_possible_states()
+        self.generate_terminal_states()
+        self.generate_actions()
+        self.value_iteration()
     
     
 if __name__ == "__main__":
     mdp = MDP()
-    mdp.generate_possible_states()
-    #print ("all states are : ", toto.states)
-    mdp.generate_terminal_states() # generate terminal states first because generate actions needs them
-    # print("terminal states : ", toto.terminal_states)
-    mdp.generate_actions()
-    best_actions = mdp.value_iteration()
-    print(best_actions)
+    mdp.generate_policy()
+    # print(mdp.policy)
+    if ((0,0,0,0,0,0,0,0,0) in mdp.policy.keys()):
+        print (mdp.policy[(0,0,0,0,0,0,0,0,0)])
                 
                 
             

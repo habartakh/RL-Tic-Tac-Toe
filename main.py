@@ -1,9 +1,10 @@
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
+from MDP import MDP
 
 class TicTacToe:
-    def __init__(self, main_window):
+    def __init__(self, main_window, agent):
         self.window = main_window
         self.window.title("Tic Tac Toe")
         self.buttons = [[None for _ in range(3)] for _ in range(3)]
@@ -25,6 +26,8 @@ class TicTacToe:
         self.current_player_symbol = "x"
         self.game_set  = False
         self.game_board = [0 for _ in range(9)] # will be filled with "x" or "o"
+        
+        self.agent = agent 
 
         
     # when clicking on a button, fill it with the appropriate text 
@@ -97,15 +100,36 @@ class TicTacToe:
        self.current_player = 1
        self.current_player_symbol ="x"
                
-               
+   
+    def agent_move(self):
+        self.agent.generate_policy()
+        # print (self.agent.policy)
+        
+        if self.current_player == 1 : # TODO : correct bug the agent plays two times as x and o in this method
+            print ("self.current_player == 1")
+            for state in self.agent.policy.keys():
+                # print("current state is : ", state)
+                if list(state) == self.game_board : 
+                    print("state exists in game_board!!")
+                    action = self.agent.policy[state]
+                    if action != None :  # in case action = None , do nothing 
+                        row = int (action / 3)
+                        col = int (action % 3)
+                        print ("Invoke button action")
+                        self.buttons[row][col].invoke()
+        self.window.after(100, self.agent_move) # will execute this method every 100 ms in the main loop
+                
+                
     def run_game(self):
         # game will continue till there is a winner or a draw
+        self.agent_move()
         self.window.mainloop()
             
     
 if __name__ == "__main__":
     main_window = tk.Tk()
-    game = TicTacToe(main_window)
+    agent = MDP()
+    game = TicTacToe(main_window, agent)
     game.run_game()
     
     
