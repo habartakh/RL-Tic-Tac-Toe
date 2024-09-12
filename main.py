@@ -1,6 +1,6 @@
+import random
 import tkinter as tk
 from tkinter import messagebox
-from tkinter import ttk
 from MDP import MDP
 
 class TicTacToe:
@@ -28,6 +28,8 @@ class TicTacToe:
         self.game_board = [0 for _ in range(9)] # will be filled with "x" or "o"
         
         self.agent = agent 
+        self.agent.generate_policy()
+        self.agent_move()
 
         
     # when clicking on a button, fill it with the appropriate text 
@@ -50,6 +52,8 @@ class TicTacToe:
                  
         else : 
             self.switch_player() 
+            if self.current_player == 1 : 
+                self.agent_move()
         
         
     
@@ -99,30 +103,27 @@ class TicTacToe:
                self.game_board[i*3+j] = 0
        self.current_player = 1
        self.current_player_symbol ="x"
+       self.agent_move()
                
    
     def agent_move(self):
-        self.agent.generate_policy()
-        # print (self.agent.policy)
+        if self.game_board == [0,0,0,0,0,0,0,0,0] : 
+            action = random.randint(0, 8)
         
-        if self.current_player == 1 : # TODO : correct bug the agent plays two times as x and o in this method
-            print ("self.current_player == 1")
-            for state in self.agent.policy.keys():
-                # print("current state is : ", state)
-                if list(state) == self.game_board : 
-                    print("state exists in game_board!!")
-                    action = self.agent.policy[state]
-                    if action != None :  # in case action = None , do nothing 
-                        row = int (action / 3)
-                        col = int (action % 3)
-                        print ("Invoke button action")
-                        self.buttons[row][col].invoke()
-        self.window.after(100, self.agent_move) # will execute this method every 100 ms in the main loop
-                
+        else : 
+            action = self.agent.policy[tuple(self.game_board)]
+            print ("action to take is : ", action)
+        
+        if action != None :  # in case action = None , do nothing 
+            row = int (action / 3)
+            col = int (action % 3)
+            print ("Invoke button action")
+            self.buttons[row][col].invoke()
+            
                 
     def run_game(self):
         # game will continue till there is a winner or a draw
-        self.agent_move()
+        # self.agent_move()
         self.window.mainloop()
             
     
