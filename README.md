@@ -12,11 +12,7 @@ our agent.
 
  ## Value Iteration Algorithm 
  
-With value iteration, the observations are as follows : 
-
-    The actions generated do not depend on the Bellman's equation's discount factor and threshold.
+With value iteration, positive results are observed. The agent not only focuses on taking actions that will lead to his victory, 
+he also tries to prevent the human opponent from winning.
     
-    The agent focuses on taking actions that will lead to his victory. This only works in cases ending with a draw. 
     
-    However, when the human opponent takes actions leading him to victory, rather than preventing him from winning,
-the agent focuses on winning his own game. This results in the agent's lost. 
