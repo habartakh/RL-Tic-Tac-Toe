@@ -5,7 +5,8 @@ class MDP :
         self.states = set()
         self.terminal_states = set()
         self.actions = {}
-        self.policy = {}
+        self.value_iter_policy = {}
+        self.policy_iter_policy = {}
         
         
     
@@ -125,55 +126,107 @@ class MDP :
     
     
     def value_iteration(self):
-        
-        theta = 10e-10
+        theta = 10e-50
         delta = theta + 1  # the change in value estimates across all states
-        discount_factor = 0.8
+        discount_factor = 0.95
         
         init = [0 for _ in range (len(self.states))] 
         value_states = dict(zip(self.states , init)) # V_a(s) for each state
-        self.policy = dict(zip(self.states, init)) # for each state, determines best action to take (policy)
+        self.value_iter_policy = dict(zip(self.states, init)) # for each state, determines best action to take (policy)
         
         while delta >= theta : 
             delta = 0 
-            for state in self.states:
-                # print("current state is : ", state)
-               
-                
+            for state in self.states:             
                 if state in self.terminal_states : 
                     value_states[state] = self.generate_reward(state)
-                    self.policy[state] = None
+                    self.value_iter_policy[state] = None
                     continue
                 
                 v = value_states[state]
                 best_value = float("-inf")
                 
                 for action in self.actions[state]:
-                    # print("current action :", action)
                     possible_next_states = self.possible_next_states(state,action)
-                    # print("possible next states : ", possible_next_states)
                     possible_value = 0 
-                    
-                    
                     for possible_next_state in possible_next_states:                        
                         possible_reward = self.generate_reward(possible_next_state)
                         transition_prob = self.transition_function(state)
-                        # print(" self.transition_function(state) is :",  transition_prob)
-                        # print("possible reward is : ", possible_reward)
-                       
-                        
                         possible_value += transition_prob * (possible_reward + (discount_factor * value_states[possible_next_state]))
-                        # print ("possible v_s is : ", possible_value)
                        
-                    
-                    best_value  = max(best_value, possible_value)
+                    if  possible_value > best_value : 
+                        best_value  = possible_value
+                        best_action = action
                             
                 value_states[state] = best_value # update the value of the current state
-                self.policy[state] = action  # store the best action for the state
+                self.value_iter_policy[state] = best_action  # store the best action for the state
                 
                 delta = max(delta, abs(v-value_states[state]))  #update delta 
-                # print("delta" , delta)
+    
+    
+    # def policy_evaluation(self , policy):
+    #     theta = 10e-50
+    #     delta = theta + 1  # the change in value estimates across all states
+    #     discount_factor = 0.95
         
+    #     init = [0 for _ in range (len(self.states))] 
+    #     value_states = dict(zip(self.states , init)) # V_a(s) for each state
+        
+    #     # Policy Evaluation
+    #     while delta >= theta : 
+    #         delta = 0 
+    #         for state in self.states : 
+    #             if state in self.terminal_states : 
+    #                 print ("state in terminal_states")
+    #                 continue
+                
+    #             expected_value = 0 
+    #             v = value_states[state]
+    #             action = policy[state]
+    #             for possible_state in self.possible_next_states(state, action) : 
+    #                 transition_prob = self.transition_function(possible_state)
+    #                 expected_reward = self.generate_reward(possible_state)
+    #                 expected_value += transition_prob * (expected_reward + discount_factor *value_states[possible_state])
+                    
+    #             value_states[state] = expected_value
+                
+    #         delta = max (delta, abs(v-value_states[state]))
+    #         return value_states
+        
+        
+    # def policy_iteration(self):
+        
+    #     self.policy_iter_policy =  self.value_iter_policy
+    #     policy_eval_states = self.policy_evaluation(self.policy_iter_policy)
+    #     # Policy Improvement 
+        
+    #     policy_stable = True
+    #     for state in self.states :
+    #         old_action = self.policy_iter_policy[state]
+            
+    #         # Update policy value for each state : self.policy_iter_policy[state]
+    #          for action in self.actions[state]:
+    #                 possible_next_states = self.possible_next_states(state,action)
+    #                 possible_value = 0 
+    #                 for possible_next_state in possible_next_states:                        
+    #                     possible_reward = self.generate_reward(possible_next_state)
+    #                     transition_prob = self.transition_function(state)
+    #                     possible_value += transition_prob * (possible_reward + (discount_factor * value_states[possible_next_state]))
+                       
+    #                 best_value  = max(best_value, possible_value)
+    #         self.policy_iter_policy[state] = 
+            
+            
+    #         if old_action != self.policy_iter_policy[state] : 
+    #             policy_stable = False 
+        
+    #     if policy_stable : 
+    #         return policy_eval_states
+        
+    #     else : 
+    #          policy_eval_states = self.policy_evaluation(self.policy_iter_policy)
+    
+    
+    
     
     def generate_policy (self):
         self.generate_possible_states()
@@ -185,9 +238,9 @@ class MDP :
 if __name__ == "__main__":
     mdp = MDP()
     mdp.generate_policy()
-    # print(mdp.policy)
-    if ((0,0,0,0,0,0,0,0,0) in mdp.policy.keys()):
-        print (mdp.policy[(0,0,0,0,0,0,0,0,0)])
+    print(mdp.policy)
+    # if ((0,0,0,0,0,0,0,0,0) in mdp.policy.keys()):
+    #     print (mdp.policy[(0,0,0,0,0,0,0,0,0)])
                 
                 
             
