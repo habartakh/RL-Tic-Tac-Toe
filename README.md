@@ -15,11 +15,16 @@ our agent.
 With value iteration, positive results are observed. The agent not only focuses on taking actions that will lead to his victory, 
 he also tries to prevent the human opponent from winning.
 Moreover, when faced with the choices of winning a game or preventing the opponent from winning, such as the following case : 
+
 |x| |o|
+
 |o|o| |
+
 |x| |x|
 
 The agent places the X in the (2,3) case to prevent O from winning, instead of placing X in the (3,2) case
 and thus winning the game. 
+
+
     
     
