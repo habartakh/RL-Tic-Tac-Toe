@@ -14,8 +14,12 @@ class PolicyIteration (MDP) :
         self.generate_actions()
         
         # self.init = [0 for _ in range (len(self.states))] 
-        self.v_s = dict(zip(self.states , [0 for _ in range (len(self.states))]))
-        self.policy = dict(zip(self.states, [random.randint(0,8) for _ in range(len(self.states))]))
+        self.v_s = {}
+        self.policy = {}
+        
+        for state in self.states : 
+            self.v_s[state] = 0 
+            self.policy[state] = random.choice(self.actions[state]) if self.actions[state] else None
         
         print (self.policy[(2, 1, 0, 1, 2, 0, 0, 0, 1)])
         

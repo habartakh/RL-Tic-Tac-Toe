@@ -2,6 +2,7 @@ import random
 import tkinter as tk
 from tkinter import messagebox
 from MDP import MDP
+from rl_algorithms import PolicyIteration
 
 class TicTacToe:
     def __init__(self, main_window, agent):
@@ -28,7 +29,7 @@ class TicTacToe:
         self.game_board = [0 for _ in range(9)] # will be filled with "x" or "o"
         
         self.agent = agent 
-        self.agent.generate_policy()
+        # self.agent.generate_policy("policy_iter")
         self.agent_move()
 
         
@@ -107,6 +108,7 @@ class TicTacToe:
                
    
     def agent_move(self):
+        # Make the agent start at random positions
         if self.game_board == [0,0,0,0,0,0,0,0,0] : 
             action = random.randint(0, 8)
         
@@ -117,22 +119,20 @@ class TicTacToe:
         if action != None :  # in case action = None , do nothing 
             row = int (action / 3)
             col = int (action % 3)
-            print ("Invoke button action")
             self.buttons[row][col].invoke()
             
                 
     def run_game(self):
         # game will continue till there is a winner or a draw
-        # self.agent_move()
         self.window.mainloop()
             
     
 if __name__ == "__main__":
     main_window = tk.Tk()
-    agent = MDP()
+    agent = PolicyIteration(10e-30, 0.9)
     game = TicTacToe(main_window, agent)
     game.run_game()
     
-    
+   
  
     
