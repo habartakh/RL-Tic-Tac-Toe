@@ -1,8 +1,10 @@
 import random
+import argparse
+import sys
 import tkinter as tk
 from tkinter import messagebox
 from MDP import MDP
-from rl_algorithms import PolicyIteration
+from rl_algorithms import PolicyIteration, ValueIteration
 
 class TicTacToe:
     def __init__(self, main_window, agent):
@@ -29,7 +31,6 @@ class TicTacToe:
         self.game_board = [0 for _ in range(9)] # will be filled with "x" or "o"
         
         self.agent = agent 
-        # self.agent.generate_policy("policy_iter")
         self.agent_move()
 
         
@@ -128,9 +129,19 @@ class TicTacToe:
             
     
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--algorithm", nargs=1, default="val_iter", choices=["val_iter", "pol_iter"])
+    print(sys.argv)
     main_window = tk.Tk()
-    agent = PolicyIteration(10e-30, 0.9)
-    game = TicTacToe(main_window, agent)
+    if sys.argv[2] == "pol_iter" : 
+        agent1 = PolicyIteration(10e-30, 0.9)
+        agent1.policy_iteration()
+        game = TicTacToe(main_window, agent1)
+        
+    else : 
+        agent2 = ValueIteration(10e-30,0.9)
+        agent2.value_iteration()
+        game = TicTacToe(main_window, agent2)
     game.run_game()
     
    

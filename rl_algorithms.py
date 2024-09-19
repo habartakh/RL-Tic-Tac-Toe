@@ -1,10 +1,57 @@
 import random
 from MDP import MDP
 
-
-class PolicyIteration (MDP) : 
+class ValueIteration(MDP):
+    def __init__(self, threshold=10e-10,discount_factor=0.9):
+        super().__init__() # Inherit all the methods and attributes of MDP
+        self.theta = threshold # convergence threshold 
+        self.discount_factor = discount_factor
+        
+        self.generate_possible_states()
+        self.generate_terminal_states()
+        self.generate_actions()
+         
+        init = [0 for _ in range (len(self.states))] 
+        self.v_a = dict(zip(self.states,init)) # V_a(s) for each state s
+        self.policy = dict(zip(self.states,init)) # for each state, determines best action to take (policy)
+        
+        
+    def value_iteration(self):
+        delta = self.theta + 1
+        
+        while delta >= self.theta : 
+          delta = 0 
+          for state in self.states:             
+              if state in self.terminal_states : 
+                  self.v_a[state] = self.generate_reward(state)
+                  self.policy[state] = None
+                  continue
+              
+              v = self.v_a[state]
+              best_value = float("-inf")
+              
+              for action in self.actions[state]:
+                  possible_next_states = self.possible_next_states(state,action)
+                  possible_value = 0 
+                  for possible_next_state in possible_next_states:                        
+                      possible_reward = self.generate_reward(possible_next_state)
+                      transition_prob = self.transition_function(state)
+                      possible_value += transition_prob * (possible_reward + (self.discount_factor * self.v_a[possible_next_state]))
+                     
+                  if  possible_value > best_value : 
+                      best_value  = possible_value
+                      best_action = action
+                          
+              self.v_a[state] = best_value # update the value of the current state
+              self.policy[state] = best_action  # store the best action for the state
+              
+              delta = max(delta, abs(v-self.v_a[state]))  #update delta 
+    
+    
+    
+class PolicyIteration(MDP): 
     def __init__(self, threshold=10e-10, discount_factor=0.9): 
-        super().__init__() # Inherit all the methods and attributes oh MDP
+        super().__init__()
         self.is_stable = False
         self.theta = threshold # convergence threshold 
         self.discount_factor = discount_factor
@@ -13,7 +60,6 @@ class PolicyIteration (MDP) :
         self.generate_terminal_states()
         self.generate_actions()
         
-        # self.init = [0 for _ in range (len(self.states))] 
         self.v_s = {}
         self.policy = {}
         
@@ -21,7 +67,6 @@ class PolicyIteration (MDP) :
             self.v_s[state] = 0 
             self.policy[state] = random.choice(self.actions[state]) if self.actions[state] else None
         
-        print (self.policy[(2, 1, 0, 1, 2, 0, 0, 0, 1)])
         
     def policy_evaluation(self): 
         converge = False
@@ -79,9 +124,12 @@ class PolicyIteration (MDP) :
                 
                 
 if __name__ == "__main__" : 
-    agent = PolicyIteration()
-    agent.policy_iteration()
-    print(agent.policy)                 
+    agent1 = ValueIteration()
+    agent1.value_iteration()
+    print(agent1.policy)
+    # agent2 = PolicyIteration()
+    # agent2.policy_iteration()
+    # print(agent2.policy)                 
             
                 
         
