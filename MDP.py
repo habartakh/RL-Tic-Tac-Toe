@@ -5,12 +5,10 @@ class MDP :
         self.states = set()
         self.terminal_states = set()
         self.actions = {}
-        self.value_iter_policy = {}
         
-    
     def generate_possible_states(self):
         
-        # First generate all the board configurations possible and impossible ones 
+        # First generate all the board possible and impossible configurations 
         
         # A single board configuration is modeled by a nonuple 
         # which makes calculations simpler than a 3*3 matrix such as:
@@ -122,64 +120,9 @@ class MDP :
                 possible_next_states.append(tuple(next_new_state))
         
         return possible_next_states
+            
     
     
-    def value_iteration(self):
-        theta = 10e-10
-        delta = theta + 1  # the change in value estimates across all states
-        discount_factor = 0.95
-        
-        init = [0 for _ in range (len(self.states))] 
-        value_states = dict(zip(self.states , init)) # V_a(s) for each state
-        self.value_iter_policy = dict(zip(self.states, init)) # for each state, determines best action to take (policy)
-        
-        while delta >= theta : 
-            delta = 0 
-            for state in self.states:             
-                if state in self.terminal_states : 
-                    value_states[state] = self.generate_reward(state)
-                    self.value_iter_policy[state] = None
-                    continue
-                
-                v = value_states[state]
-                best_value = float("-inf")
-                
-                for action in self.actions[state]:
-                    possible_next_states = self.possible_next_states(state,action)
-                    possible_value = 0 
-                    for possible_next_state in possible_next_states:                        
-                        possible_reward = self.generate_reward(possible_next_state)
-                        transition_prob = self.transition_function(state)
-                        possible_value += transition_prob * (possible_reward + (discount_factor * value_states[possible_next_state]))
-                       
-                    if  possible_value > best_value : 
-                        best_value  = possible_value
-                        best_action = action
-                            
-                value_states[state] = best_value # update the value of the current state
-                self.value_iter_policy[state] = best_action  # store the best action for the state
-                
-                delta = max(delta, abs(v-value_states[state]))  #update delta 
-    
-    
-    
-    
-    def generate_policy (self):
-        self.generate_possible_states()
-        self.generate_terminal_states()
-        self.generate_actions()
-        self.value_iteration()
-        
-    
-    
-if __name__ == "__main__":
-    mdp = MDP()
-    mdp.generate_policy("policy_iter")
-    # print(mdp.actions[(1, 2, 1, 2, 2, 2, 2, 1, 1)])
-    # print(mdp.value_iter_policy)
-    # if ((0,0,0,0,0,0,0,0,0) in mdp.policy.keys()):
-    #     print (mdp.policy[(0,0,0,0,0,0,0,0,0)])
-                
                 
             
     
